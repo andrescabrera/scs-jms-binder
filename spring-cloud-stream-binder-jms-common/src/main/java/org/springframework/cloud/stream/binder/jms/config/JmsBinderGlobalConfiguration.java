@@ -107,7 +107,7 @@ public class JmsBinderGlobalConfiguration {
 
 		@Bean
 		JMSMessageChannelBinder jmsMessageChannelBinder(Codec codec,
-				JmsMessageDrivenChannelAdapterFactory jmsMessageDrivenChannelAdapterFactory,
+                JmsMessageDrivenChannelAdapterFactory jmsMessageDrivenChannelAdapterFactory,
 				JmsSendingMessageHandlerFactory jmsSendingMessageHandlerFactory, JmsTemplate jmsTemplate) throws Exception {
 
 			JMSMessageChannelBinder jmsMessageChannelBinder = new JMSMessageChannelBinder(provisioningProvider,

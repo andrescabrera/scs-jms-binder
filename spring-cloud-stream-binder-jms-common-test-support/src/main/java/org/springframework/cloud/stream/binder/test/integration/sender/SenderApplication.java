@@ -16,22 +16,23 @@
 
 package org.springframework.cloud.stream.binder.test.integration.sender;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
+import org.springframework.test.context.TestPropertySource;
 
-@SpringBootApplication(exclude = {EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class})
+import java.util.HashMap;
+import java.util.Map;
+
+@SpringBootApplication(exclude = {WebMvcAutoConfiguration.class})
+@TestPropertySource(properties = "spring.main.web-application-type=none")
 @EnableBinding(Source.class)
 public class SenderApplication {
 

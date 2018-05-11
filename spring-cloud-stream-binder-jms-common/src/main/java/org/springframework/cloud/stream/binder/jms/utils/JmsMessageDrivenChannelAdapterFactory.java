@@ -16,12 +16,6 @@
 
 package org.springframework.cloud.stream.binder.jms.utils;
 
-import javax.jms.BytesMessage;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Queue;
-import javax.jms.Session;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -30,14 +24,23 @@ import org.springframework.cloud.stream.binder.ExtendedConsumerProperties;
 import org.springframework.cloud.stream.binder.jms.config.JmsConsumerProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.integration.dsl.jms.JmsMessageDrivenChannelAdapter;
 import org.springframework.integration.jms.ChannelPublishingJmsMessageListener;
+import org.springframework.integration.jms.JmsMessageDrivenEndpoint;
+import org.springframework.integration.jms.dsl.Jms;
+import org.springframework.integration.jms.dsl.JmsMessageDrivenChannelAdapterSpec;
 import org.springframework.retry.RecoveryCallback;
 import org.springframework.retry.RetryCallback;
 import org.springframework.retry.RetryContext;
 import org.springframework.retry.backoff.ExponentialBackOffPolicy;
 import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
+
+import javax.jms.BytesMessage;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageProducer;
+import javax.jms.Queue;
+import javax.jms.Session;
 
 /**
  * Component responsible of building up endpoint required to bind consumers.
@@ -73,16 +76,14 @@ public class JmsMessageDrivenChannelAdapterFactory implements ApplicationContext
 		this.applicationContext = applicationContext;
 	}
 
-	public JmsMessageDrivenChannelAdapter build(Queue destination,
-			final ExtendedConsumerProperties<JmsConsumerProperties> properties) {
+	public org.springframework.integration.core.MessageProducer build(Queue destination,
+								 final ExtendedConsumerProperties<JmsConsumerProperties> properties) throws Exception {
 		RetryingChannelPublishingJmsMessageListener listener = new RetryingChannelPublishingJmsMessageListener(
 				properties, messageRecoverer, properties.getExtension().getDlqName());
 		listener.setBeanFactory(this.beanFactory);
-		JmsMessageDrivenChannelAdapter adapter = new JmsMessageDrivenChannelAdapter(
-				listenerContainerFactory.build(destination), listener);
-		adapter.setApplicationContext(this.applicationContext);
-		adapter.setBeanFactory(this.beanFactory);
-		return adapter;
+		JmsMessageDrivenChannelAdapterSpec adapter = Jms.messageDrivenChannelAdapter(listenerContainerFactory.build(destination));
+
+		return (org.springframework.integration.core.MessageProducer) adapter.getObject();
 	}
 
 	private static class RetryingChannelPublishingJmsMessageListener extends ChannelPublishingJmsMessageListener {

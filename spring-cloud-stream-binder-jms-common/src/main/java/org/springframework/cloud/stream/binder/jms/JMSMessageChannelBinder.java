@@ -34,6 +34,11 @@ import org.springframework.cloud.stream.binder.jms.utils.TopicPartitionRegistrar
 import org.springframework.cloud.stream.provisioning.ConsumerDestination;
 import org.springframework.cloud.stream.provisioning.ProducerDestination;
 import org.springframework.cloud.stream.provisioning.ProvisioningProvider;
+import org.springframework.integration.codec.Codec;
+import org.springframework.integration.dsl.IntegrationFlow;
+import org.springframework.integration.dsl.IntegrationFlows;
+import org.springframework.integration.jms.dsl.Jms;
+import org.springframework.integration.jms.dsl.JmsMessageDrivenChannelAdapterSpec;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.messaging.MessageChannel;
@@ -83,7 +88,7 @@ public class JMSMessageChannelBinder
 
 	@Override
 	protected MessageHandler createProducerMessageHandler(ProducerDestination producerDestination,
-			ExtendedProducerProperties<JmsProducerProperties> producerProperties) throws Exception {
+			ExtendedProducerProperties<JmsProducerProperties> producerProperties, MessageChannel messageChannel) throws Exception {
 		TopicPartitionRegistrar topicPartitionRegistrar = new TopicPartitionRegistrar();
 		Session session = connectionFactory.createConnection().createSession(true, 1);
 
@@ -119,5 +124,9 @@ public class JMSMessageChannelBinder
 	@Override
 	public JmsProducerProperties getExtendedProducerProperties(String channelName) {
 		return this.extendedBindingProperties.getExtendedProducerProperties(channelName);
+	}
+
+	public void setCodec(Codec codec) {
+		// TODO
 	}
 }
